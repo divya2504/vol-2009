@@ -45,6 +45,10 @@ const (
 	default_Affinity_Router_Topic = "affinityRouter"
 	default_ProbeHost             = ""
 	default_ProbePort             = 8080
+	 default_CoreTimeout           = int64(500)
+        default_MaxConnectionRetries      = -1 // retries forever
+        default_ConnectionRetryInterval   = 2  // in seconds
+
 )
 
 // ROCoreFlags represents the set of configurations used by the read-only core service
@@ -69,6 +73,10 @@ type ROCoreFlags struct {
 	AffinityRouterTopic string
 	ProbeHost           string
 	ProbePort           int
+	 DefaultCoreTimeout  int64
+        MaxConnectionRetries      int
+        ConnectionRetryInterval   int
+
 }
 
 func init() {
@@ -97,6 +105,10 @@ func NewROCoreFlags() *ROCoreFlags {
 		AffinityRouterTopic: default_Affinity_Router_Topic,
 		ProbeHost:           default_ProbeHost,
 		ProbePort:           default_ProbePort,
+		 DefaultCoreTimeout:        default_CoreTimeout,
+                MaxConnectionRetries:      default_MaxConnectionRetries,
+                ConnectionRetryInterval:   default_ConnectionRetryInterval,
+
 	}
 	return &roCoreFlag
 }
@@ -150,6 +162,17 @@ func (cf *ROCoreFlags) ParseCommandArguments() {
 
 	help = fmt.Sprintf("The port on which to listen to answer liveness and readiness probe queries over HTTP.")
 	flag.IntVar(&(cf.ProbePort), "probe_port", default_ProbePort, help)
+
+	 help = fmt.Sprintf("Default Core timeout")
+        flag.Int64Var(&(cf.DefaultCoreTimeout), "core_timeout", default_CoreTimeout, help)
+
+        help = fmt.Sprintf("The number of retries to connect to a dependent component")
+        flag.IntVar(&(cf.MaxConnectionRetries), "max_connection_retries", default_MaxConnectionRetries, help)
+
+        help = fmt.Sprintf("The number of seconds between each connection retry attempt ")
+        flag.IntVar(&(cf.ConnectionRetryInterval), "connection_retry_interval", default_ConnectionRetryInterval, help)
+
+
 
 	flag.Parse()
 
